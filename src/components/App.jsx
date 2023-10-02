@@ -1,32 +1,36 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { ContactForm } from './ContactForm/ContactForm';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactList/ContactList';
+
 const LOCAL_KEY = 'phoneContacts';
+
 export class App extends Component {
   state = {
-    contacts: null,
+    contacts: [],
     filter: '',
   };
-  componentDidUpdate(_, prevState) {
-    const { contacts } = this.state;
-    if (!contacts) {
-      if (prevState.contacts.length < contacts.length) {
-        localStorage.setItem(LOCAL_KEY, JSON.stringify(contacts));
-      }
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(contacts));
+
+  componentDidMount() {
+    const contactsFromLocalStorage = JSON.parse(
+      localStorage.getItem(LOCAL_KEY)
+    );
+    if (contactsFromLocalStorage) {
+      this.setState({ contacts: contactsFromLocalStorage });
     }
   }
-  componentDidMount() {
-    const contacts = JSON.parse(localStorage.getItem(LOCAL_KEY));
-    this.setState({ contacts });
+
+  componentDidUpdate(_, prevState) {
+    console.log(12321);
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(this.state.contacts));
+    }
   }
 
   handleAddContact = newContact => {
     this.setState(prevState => ({
       contacts: [...prevState.contacts, newContact],
     }));
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(this.state.contacts));
   };
 
   handleFilterChange = e => {
@@ -40,13 +44,11 @@ export class App extends Component {
   };
 
   render() {
-    const { contacts } = this.state;
+    const { contacts, filter } = this.state;
 
-    const filteredContacts = contacts
-      ? contacts.filter(contact =>
-          contact.name.toLowerCase().includes(this.state.filter)
-        )
-      : [];
+    const filteredContacts = contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter)
+    );
 
     return (
       <div>
@@ -55,11 +57,8 @@ export class App extends Component {
           onAddContact={this.handleAddContact}
           contacts={this.state.contacts}
         />
-        <h1>Contacts</h1>
-        <Filter
-          filter={this.state.filter}
-          handleFilterChange={this.handleFilterChange}
-        />
+        <h2>Contacts</h2>
+        <Filter filter={filter} handleFilterChange={this.handleFilterChange} />
         <ContactList
           contacts={filteredContacts}
           onDeleteContact={this.handleDeleteContact}
