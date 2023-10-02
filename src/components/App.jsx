@@ -8,19 +8,16 @@ export class App extends Component {
     contacts: [],
     filter: '',
   };
-
+  componentDidUpdate(_, prevState) {
+    const { contacts } = this.state;
+    if (prevState.contacts.length < contacts.length) {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(contacts));
+    }
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(contacts));
+  }
   componentDidMount() {
     const contacts = JSON.parse(localStorage.getItem(LOCAL_KEY));
     this.setState({ contacts });
-  }
-
-  componentDidUpdate(_, prevState) {
-    if (prevState.contacts) {
-      if (prevState.contacts.length < this.state.contacts.length) {
-        localStorage.setItem(LOCAL_KEY, JSON.stringify(this.state.contacts));
-      }
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(this.state.contacts));
-    }
   }
 
   handleAddContact = newContact => {
@@ -41,11 +38,9 @@ export class App extends Component {
   };
 
   render() {
-    const filteredContacts = this.state.contacts
-      ? this.state.contacts.filter(contact =>
-          contact.name.toLowerCase().includes(this.state.filter)
-        )
-      : [];
+    const filteredContacts = this.state.contacts.filter(contact =>
+      contact.name.toLowerCase().includes(this.state.filter)
+    );
 
     return (
       <div>
