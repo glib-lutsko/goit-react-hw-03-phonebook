@@ -38,7 +38,8 @@ export class App extends Component {
   };
 
   render() {
-    const filteredContacts = this.state.contacts.filter(contact =>
+    const { contacts } = this.state;
+    const filteredContacts = contacts.filter(contact =>
       contact.name.toLowerCase().includes(this.state.filter)
     );
 
