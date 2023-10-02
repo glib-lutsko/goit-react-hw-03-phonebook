@@ -5,15 +5,17 @@ import { ContactList } from './ContactList/ContactList';
 const LOCAL_KEY = 'phoneContacts';
 export class App extends Component {
   state = {
-    contacts: [],
+    contacts: null,
     filter: '',
   };
   componentDidUpdate(_, prevState) {
     const { contacts } = this.state;
-    if (prevState.contacts.length < contacts.length) {
+    if (!contacts) {
+      if (prevState.contacts.length < contacts.length) {
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(contacts));
+      }
       localStorage.setItem(LOCAL_KEY, JSON.stringify(contacts));
     }
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(contacts));
   }
   componentDidMount() {
     const contacts = JSON.parse(localStorage.getItem(LOCAL_KEY));
@@ -39,9 +41,12 @@ export class App extends Component {
 
   render() {
     const { contacts } = this.state;
-    const filteredContacts = contacts.filter(contact =>
-      contact.name.toLowerCase().includes(this.state.filter)
-    );
+
+    const filteredContacts = contacts
+      ? contacts.filter(contact =>
+          contact.name.toLowerCase().includes(this.state.filter)
+        )
+      : [];
 
     return (
       <div>
